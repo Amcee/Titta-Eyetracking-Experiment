@@ -1,0 +1,22 @@
+questions_list2 = {
+    "1159365": ["Is it an indoors or outdoors scene?", ["indoors", "outdoors"], "outdoors"],
+    "1159382": ["What is the color of the bowl the cucumbers are in?", ["green", "yellow"], "yellow"],
+    "1159397": ["What material is the bridge, concrete or maybe steel?", ["concrete", "steel"], "concrete"],
+    "1159402": ["On which side of the image is the ladder?", ["left", "right"], "right"],
+    "1159428": ["Is it the train station?", ["yes", "no"], "no"],
+    "1159440": ["Are the baskets red?", ["yes", "no"], "yes"],
+    "1159450": ["Is there a snowboard to the left of the skis?", ["yes", "no"], "no"],
+    "1159470": ["Is the cart in the bottom part or in the top of the image?", ["bottom", "top"], "top"],
+    "1159493": ["Where in the picture is the cart, on the left or on the right?", ["left", "right"], "left"],
+    "1159497": ["Where is the mobile phone, on the right or on the left of the picture?", ["right", "left"], "right"],
+    "1159515": ["Is the TV stand wooden and white?", ["yes", "no"], "no"],
+    "1159527": ["Do you see a fence there?", ["yes", "no"], "yes"],
+    "1159560": ["The woman's hair is what color?", ["brown", "black"], "brown"],
+    "1159575": ["Do you see any bags on the ground?", ["yes", "no"], "yes"],
+    "1159577": ["Which side is the person on?", ["left", "right"], "left"],
+    "1159594": ["Are there any boxes on the ground?", ["yes", "no"], "no"],
+    "1159610": ["Which side is the black bag on, the right or the left?", ["right", "left"], "right"],
+    "1159621": ["Which side of the picture is the flag on?", ["left", "right"], "right"],
+    "1159623": ["On which side of the photo is the camera?", ["left", "right"], "left"],
+    "1159641": ["Are there both bicycles and fences in the image?", ["yes", "no"], "no"]
+}

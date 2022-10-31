@@ -1,0 +1,22 @@
+questions_list4 = {
+    "1159974": ["What color is the long shirt?", ["black", "white"], "white"],
+    "1159981": ["Are there any clocks?", ["yes", "no"], "no"],
+    "1159984": ["Does the container look blue or yellow?", ["blue", "yellow"], "blue"],
+    "1159986": ["Was this photo taken in a garage?", ["yes", "no"], "no"],
+    "1159998": ["Do you see any umbrellas or statues?", ["yes", "no"], "yes"],
+    "1160073": ["On which side of the image is the chair?", ["left", "right"], "right"],
+    "1160091": ["Do you see both a chair and a desk there?", ["yes", "no"], "yes"],
+    "1160171": ["Is that man below a tent?", ["yes", "no"], "no"],
+    "1160175": ["On which side of the image is the microwave?", ["left", "right"], "right"],
+    "1160181": ["What color is the safety jacket in the center of the picture?", ["green", "yellow"], "green"],
+    "1160187": ["Is the bicycle to the right or to the left of the trashcan on the street?", ["right", "left"], "left"],
+    "1160193": ["Are there any bottles?", ["yes", "no"], "yes"],
+    "1160221": ["What's the fence made of?", ["wood", "metal"], "wood"],
+    "1160231": ["On which side of the picture is the man?", ["left", "right"], "right"],
+    "1160234": ["Do you see a sheep in the pasture?", ["yes", "no"], "no"],
+    "1160243": ["Is the oven the same color as the dishwasher?", ["yes", "no"], "yes"],
+    "150260": ["Is the lamp on the right side of the picture?", ["yes", "no"], "yes"],
+    "150273": ["Is the baseball bat made of aluminum?", ["yes", "no"], "no"],
+    "150302": ["On which side of the image is the house?", ["left", "right"], "left"],
+    "150303": ["Does the mirror look round?", ["yes", "no"], "no"]
+}

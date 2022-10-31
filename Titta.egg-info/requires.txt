@@ -1,0 +1,2 @@
+psychopy
+websocket_client

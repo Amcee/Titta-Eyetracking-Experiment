@@ -27,7 +27,7 @@ et_name = 'Tobii Pro Spectrum'
 # et_name = 'IS4_Large_Peripheral'
 # et_name = 'Tobii Pro Nano'
 
-dummy_mode = False
+dummy_mode = True
 bimonocular_calibration = False
 
 # Change any of the default dettings?e
@@ -43,7 +43,7 @@ tracker.init()
 
 # Window set-up (this color will be used for calibration)
 win = visual.Window(monitor=mon, fullscr=FULLSCREEN,
-                    screen=1, size=SCREEN_RES, units='deg')
+                    screen=3, size=SCREEN_RES, units='deg')
 
 fixation_point = helpers.MyDot2(win)
 

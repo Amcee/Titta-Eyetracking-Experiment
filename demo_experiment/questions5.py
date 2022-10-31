@@ -1,0 +1,22 @@
+questions_list5 = {
+    "150327": ["Is there a window in this scene?", ["yes", "no"], "no"],
+    "150367": ["Is the hat blue or white?", ["blue", "white"], "white"],
+    "150382": ["Are there both balls and rackets in the picture?", ["yes", "no"], "yes"],
+    "150386": ["Is the steering wheel black or white?", ["black", "white"], "white"],
+    "150405": ["On which side of the image is the man, the right or the left?", ["right", "left"], "left"],
+    "150460": ["Is the stapler blue?", ["yes", "no"], "yes"],
+    "150463": ["Is the green pot on the left or on the right side?", ["left", "right"], "right"],
+    "150468": ["Are there any bananas?", ["yes", "no"], "no"],
+    "150469": ["Are there either any candles or lamps?", ["yes", "no"], "yes"],
+    "150490": ["On which side of the photo is the blender?", ["left", "right"], "right"],
+    "150518": ["On which side is the umbrella?", ["right", "left"], "left"],
+    "150552": ["Is this place a hotel or a library?", ["hotel", "library"], "library"],
+    "1591771": ["On which side of the photo is the television?", ["left", "right"], "left"],
+    "1591780": ["Is the cellphone on the right side or on the left?", ["left", "right"], "right"],
+    "1591838": ["Is the computer mouse to the left or to the right of the blue cup?", ["left", "right"], "left"],
+    "1591849": ["On which side of the image is the stove?", ["left", "right"], "right"],
+    "1591875": ["Are there either bottles or chairs in this image?", ["yes", "no"], "no"],
+    "1591936": ["Does the door look open and wooden?", ["yes", "no"], "yes"],
+    "1592010": ["What's the table made of?", ["wood", "glass"], "glass"],
+    "1592083": ["Is the oven on the right or on the left?", ["right", "left"], "left"]
+}
