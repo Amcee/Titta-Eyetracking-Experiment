@@ -4,13 +4,12 @@ import pickle
 import json
 import pandas as pd
 import psychopy.event
-from psychopy import visual, monitors, gui, event
+from psychopy import visual, monitors, gui
 import numpy as np
 import matplotlib.pyplot as plt
 from titta import Titta, helpers_tobii as helpers
 from os import listdir
-from os.path import isfile, join, normpath, basename
-import questions
+from os.path import isfile, join
 
 # initialize participant ID
 participant_id = 1
@@ -41,7 +40,7 @@ et_name = 'Tobii Pro Spectrum'
 # et_name = 'IS4_Large_Peripheral'
 # et_name = 'Tobii Pro Nano'
 
-dummy_mode = True
+dummy_mode = False
 bimonocular_calibration = False
 
 # Change any of the default dettings?e

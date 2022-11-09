@@ -35,6 +35,7 @@ from PIL import Image
 import tobii_research as tr
 import numpy as np
 from titta import helpers_tobii as helpers
+from tobiiresearch.implementation import EyeTracker
 
 
 #%%

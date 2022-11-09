@@ -9,8 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from titta import Titta, helpers_tobii as helpers
 from os import listdir
-from os.path import isfile, join, normpath, basename
-import questions2 as questions
+from os.path import isfile, join
+from demo_experiment.questions import questions2 as questions
 
 # initialize participant ID
 participant_id = 1
