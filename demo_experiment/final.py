@@ -615,7 +615,7 @@ else:
     tracker.calibrate(win)
 
 # %% Record some data
-tracker.start_recording(gaze_data=True, store_data=True)
+tracker.start_recording( gaze_data=True, store_data=True)
 
 # Present fixation dot and wait for one second
 for i in range(monitor_refresh_rate):
