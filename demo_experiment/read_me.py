@@ -27,7 +27,7 @@ et_name = 'Tobii Pro Spectrum'
 # et_name = 'IS4_Large_Peripheral'
 # et_name = 'Tobii Pro Nano'
 
-dummy_mode = True
+dummy_mode = False
 bimonocular_calibration = False
 
 # Change any of the default dettings?e

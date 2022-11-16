@@ -87,6 +87,7 @@ system_info = pickle.load(f)
 f.close()
 
 
+
 #%% Save eye images to file
 list_of_images = []
 for i, eye_image in enumerate(image_data_container):

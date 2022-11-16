@@ -1,1 +1,0 @@
-["Male", "", "5 or fewer", "Prefer not to say"]

@@ -129,7 +129,14 @@ for f in files:
     for t in trial_msg:
         df_trial = extract_trial_data(df, df_msg, t[0], t[1])
 
-        filename = t[0].split('_')[1] + '.tsv'
+        # had to rewrite the commented line below to work with the t list from my experiment file
+        # get image id
+        x = os.path.normpath(t[0])
+        x = os.path.basename(x)
+        x = x.split('.')
+        image_id = x[0]
+        filename = x[0] + '.jpg' + '.tsv'
+        #filename = t[0].split('_')[1] + '.tsv'
         df_trial.to_csv(str(path) + os.sep + filename, sep='\t')
 
         print('Trial ' + filename + " written to folder ", path)
