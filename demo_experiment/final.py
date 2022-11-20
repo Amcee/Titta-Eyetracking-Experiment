@@ -17,7 +17,7 @@ participant_id = 1
 
 # %%  Monitor/geometry
 MY_MONITOR = 'testMonitor'  # needs to exists in PsychoPy monitor center
-SCREEN_ID = 3
+SCREEN_ID = 1
 FULLSCREEN = False
 SCREEN_RES = [1920, 1080]
 SCREEN_WIDTH = 52.7  # cm
@@ -106,7 +106,6 @@ def design1():
     mypath = r'images for design 1'
     im_list = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     print(im_list)
-
     images = []  # create list of stimuli images
     for element in im_list:
         images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size))
@@ -145,6 +144,7 @@ def design1():
         tracker.send_message(''.join(['onset_', im_name, '_question2']))
         stim.draw()
         win.flip()
+        myMouse.setVisible(1)
         # create dialog window
         myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
         questions1.questions_list[image_id][1].append("I am not sure")
@@ -161,6 +161,7 @@ def design1():
     win.flip()
 
     tracker.send_message('design 1 end')
+    questionnaire_anwers = None
 
     create_questionnaire()
 
@@ -217,6 +218,7 @@ def design2():
                 tracker.send_message(''.join(['onset_', im_name]))
         tracker.send_message(''.join(['offset_', im_name]))
         win.flip()
+        myMouse.setVisible(1)
         # create dialog window
         myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
         questions2.questions_list2[image_id][1].append("I am not sure")
@@ -232,6 +234,8 @@ def design2():
     win.flip()
 
     tracker.send_message('design 2 end')
+
+    questionnaire_anwers = None
 
     create_questionnaire()
 
@@ -302,6 +306,7 @@ def design3():
                 tracker.send_message(''.join(['onset_', im_name, '2']))
         tracker.send_message(''.join(['offset_', im_name, '2']))
         win.flip()
+        myMouse.setVisible(1)
         # create dialog window
         myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
         questions3.questions_list3[image_id][1].append("I am not sure")
@@ -317,6 +322,8 @@ def design3():
     win.flip()
 
     tracker.send_message('design 3 end')
+
+    questionnaire_anwers = None
 
     create_questionnaire()
 
@@ -369,6 +376,7 @@ def design4():
         stim.draw()
         win.flip()
         tracker.send_message(''.join(['onset_', im_name, '_question1']))
+        myMouse.setVisible(1)
         # create dialog window
         myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
         questions4.questions_list4[image_id][1].append("I am not sure")
@@ -386,6 +394,8 @@ def design4():
 
     tracker.send_message('design 4 end')
 
+    questionnaire_anwers = None
+
     create_questionnaire()
 
     # create file to store answers
@@ -400,7 +410,7 @@ def design5():
     tracker.send_message('design 5 start')
 
     # make list of images
-    mypath = r'images for design 4'
+    mypath = r'images for design 5'
     im_list = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     print(im_list)
 
@@ -467,6 +477,7 @@ def design5():
             if 'd' in keys:
                 break
         kb.clearEvents()
+        myMouse.setVisible(1)
         # create dialog window
         myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
         questions5.questions_list5[image_id][1].append("I am not sure")
@@ -481,6 +492,8 @@ def design5():
     win.flip()
 
     tracker.send_message('design 5 end')
+
+    questionnaire_anwers = None
 
     create_questionnaire()
 
@@ -522,7 +535,7 @@ with open('Pre-test Survey by participant ' + str(participant_id) + '.txt', 'w')
 
 # Window set-up (this color will be used for calibration)
 win = visual.Window(monitor=mon, fullscr=FULLSCREEN,
-                    screen=SCREEN_ID, size=SCREEN_RES, units='deg')
+                    screen=2, size=SCREEN_RES, units='deg')
 
 # Define mouse and make it so Mouse is visible
 myMouse = event.Mouse(visible=True)
