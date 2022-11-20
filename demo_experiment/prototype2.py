@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from titta import Titta, helpers_tobii as helpers
 from os import listdir
 from os.path import isfile, join
-from demo_experiment.questions import questions3 as questions
+from demo_experiment.questions import questions2 as questions
 
 # initialize participant ID
 participant_id = 1
@@ -30,7 +30,7 @@ mon.setSizePix(SCREEN_RES)
 stimulus_duration = 3  # Stimulus duration in seconds
 
 # make list of images
-mypath = r'images for design 3'
+mypath = r'images for design 2'
 im_list = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 print(im_list)
 

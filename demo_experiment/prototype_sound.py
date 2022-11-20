@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from titta import Titta, helpers_tobii as helpers
 from os import listdir
 from os.path import isfile, join
-from demo_experiment.questions import questions2 as questions
+from demo_experiment.questions import questions5 as questions
 
 # initialize participant ID
 participant_id = 1
@@ -30,7 +30,7 @@ mon.setSizePix(SCREEN_RES)
 stimulus_duration = 3  # Stimulus duration in seconds
 
 # make list of images
-mypath = r'images for design 2'
+mypath = r'images for design 4'
 im_list = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 print(im_list)
 
@@ -97,7 +97,7 @@ for i in range(monitor_refresh_rate):
 tracker.send_message('fix off')
 
 
-s = r'sound files for design 2'
+s = r'sound files for design 5'
 np.random.shuffle(images)  # shuffle images so they appear in a random order
 counter = 0
 # create dictionary for answers

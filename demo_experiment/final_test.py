@@ -17,12 +17,12 @@ participant_id = 1
 
 # %%  Monitor/geometry
 MY_MONITOR = 'testMonitor'  # needs to exists in PsychoPy monitor center
-SCREEN_ID = 3
+SCREEN_ID = 2
 FULLSCREEN = False
 SCREEN_RES = [1920, 1080]
 SCREEN_WIDTH = 52.7  # cm
 VIEWING_DIST = 68  # distance from eye to center of screen (cm)
-image_size = (1.5, 2)
+image_Size = (1.5, 2)
 
 monitor_refresh_rate = 60  # frames per second (fps)
 mon = monitors.Monitor(MY_MONITOR)  # Defined in defaults file
@@ -50,11 +50,13 @@ def create_questionnaire():
     myDlg = gui.Dlg(title="Questionnaire", screen=SCREEN_ID)
     choices = ["Very Low", "Low", "Somewhat Low", "Neutral", "Somewhat High", "High", "Very High"]
     myDlg.addText('How much mental and perceptual activity was required (e.g., thinking, deciding, calculating, '
-                  'remembering, looking, searching, etc.)?')
+                  'remembering, looking, searching, etc.)? Was the task easy or demanding, simple or complex, '
+                  'exacting or forgiving?')
     myDlg.addField('Mental Demand:', choices=choices)
     myDlg.addText('How much time pressure did you feel due '
                   'to the rate or pace at which the tasks or '
-                  'task elements occurred?')
+                  'task elements occurred? Was the pace '
+                  'slow and leisurely or rapid and frantic?')
     myDlg.addField('Temporal Demand:', choices=choices)
     myDlg.addText('How hard did you have to work (mentally '
                   'and physically) to accomplish your level of '
@@ -66,7 +68,7 @@ def create_questionnaire():
                   'did you feel during the task?')
     myDlg.addField('Frustration:', choices=choices)
     myDlg.addText('How successful do you think you were in accomplishing the goals of the task set by the experimenter'
-                  '? ')
+                  '? How satisfied were you with your performance in accomplishing these goals?')
     myDlg.addField('Performance:',
                    choices=["Very Good", "Good", "Somewhat Good", "Neutral", "Somewhat Poor", "Poor", "Very Poor"])
     questionnaire_anwers = myDlg.show()  # show dialog and wait for OK or Cancel
@@ -77,8 +79,8 @@ def create_questionnaire():
 
 
 # let participant pause the experiment before each design (between each 20-questions-block)
-def pause(text):
-    stim = visual.TextStim(win, text + "\n \n Click the left mouse button to start the experiment",
+def pause():
+    stim = visual.TextStim(win, "click the left mouse button to start the experiment",
                            color=(1, 1, 1), colorSpace='rgb')
     # show instruction
     stim.draw()
@@ -98,7 +100,7 @@ def pause(text):
 
 # Design order: Task Image Task
 def design1():
-    pause("For this design you will see the question before the image and after")
+    pause()
 
     tracker.send_message('design 1 start')
 
@@ -109,9 +111,10 @@ def design1():
 
     images = []  # create list of stimuli images
     for element in im_list:
-        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size))
+        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=(2, 2)))
 
     np.random.shuffle(images)  # shuffle images so they appear in a random order
+    counter = 0
     # create dictionary for answers
     answers = {}
     for image in images:
@@ -128,31 +131,29 @@ def design1():
         # show question
         stim.draw()
         t = win.flip()
-        tracker.send_message(''.join(['onset_', im_name, '_question1']))
         buttons = myMouse.getPressed()
         # check for left mouse button and move an when it gets pressed
         while buttons == [0, 0, 0]:
             buttons = myMouse.getPressed()
             if buttons == [1, 0, 0]:
                 break
-        tracker.send_message(''.join(['offset_', im_name, '_question1']))
         for i in range(stimulus_duration * monitor_refresh_rate):
             image.draw()
             t = win.flip()
             if i == 0:
                 tracker.send_message(''.join(['onset_', im_name]))
         tracker.send_message(''.join(['offset_', im_name]))
-        tracker.send_message(''.join(['onset_', im_name, '_question2']))
         stim.draw()
         win.flip()
         # create dialog window
-        myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
-        questions1.questions_list[image_id][1].append("I am not sure")
+        myDlg = gui.Dlg(title="Answer", screen=2)
         myDlg.addField('Answer:', choices=questions1.questions_list[image_id][1])
         answer = myDlg.show()  # save input in ok_data
         answers[image_id] = answer
-        tracker.send_message(''.join(['offset_', im_name, '_question2']))
 
+        counter += 1
+        if counter == 3:
+            break
 
     # create file to store answers
     with open('Answers for design 1 by participant' + str(participant_id) + '.txt', 'w') as file:
@@ -172,7 +173,7 @@ def design1():
 
 # Design order: Task Image
 def design2():
-    pause("For this design you will see the question before the image but not after")
+    pause()
 
     tracker.send_message('design 2 start')
 
@@ -183,9 +184,10 @@ def design2():
 
     images = []  # create list of stimuli images
     for element in im_list:
-        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size))
+        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=(2, 2)))
 
     np.random.shuffle(images)  # shuffle images so they appear in a random order
+    counter = 0
     # create dictionary for answers
     answers = {}
     for image in images:
@@ -202,14 +204,12 @@ def design2():
         # show question
         stim.draw()
         t = win.flip()
-        tracker.send_message(''.join(['onset_', im_name, '_question1']))
         buttons = myMouse.getPressed()
         # check for left mouse button and move an when it gets pressed
         while buttons == [0, 0, 0]:
             buttons = myMouse.getPressed()
             if buttons == [1, 0, 0]:
                 break
-        tracker.send_message(''.join(['offset_', im_name, '_question1']))
         for i in range(stimulus_duration * monitor_refresh_rate):
             image.draw()
             t = win.flip()
@@ -218,12 +218,14 @@ def design2():
         tracker.send_message(''.join(['offset_', im_name]))
         win.flip()
         # create dialog window
-        myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
-        questions2.questions_list2[image_id][1].append("I am not sure")
+        myDlg = gui.Dlg(title="Answer", screen=2)
         myDlg.addField('Answer:', choices=questions2.questions_list2[image_id][1])
         answer = myDlg.show()  # save input in ok_data
         answers[image_id] = answer
 
+        counter += 1
+        if counter == 3:
+            break
 
     # create file to store answers
     with open('Answers for design 2 by participant' + str(participant_id) + '.txt', 'w') as file:
@@ -242,7 +244,7 @@ def design2():
 
 # Design order: Image Task Image
 def design3():
-    pause("For this design you will see the image then the question and then the image again")
+    pause()
 
     tracker.send_message('design 3 start')
 
@@ -253,9 +255,10 @@ def design3():
 
     images = []  # create list of stimuli images
     for element in im_list:
-        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size))
+        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=(2, 2)))
 
     np.random.shuffle(images)  # shuffle images so they appear in a random order
+    counter = 0
     # create dictionary for answers
     answers = {}
     for image in images:
@@ -286,14 +289,12 @@ def design3():
         # show question
         stim.draw()
         t = win.flip()
-        tracker.send_message(''.join(['onset_', im_name, '_question1']))
         buttons = myMouse.getPressed()
         # check for left mouse button and move an when it gets pressed
         while buttons == [0, 0, 0]:
             buttons = myMouse.getPressed()
             if buttons == [1, 0, 0]:
                 break
-        tracker.send_message(''.join(['offset_', im_name, '_question1']))
         # show image
         for i in range(stimulus_duration * monitor_refresh_rate):
             image.draw()
@@ -303,12 +304,14 @@ def design3():
         tracker.send_message(''.join(['offset_', im_name, '2']))
         win.flip()
         # create dialog window
-        myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
-        questions3.questions_list3[image_id][1].append("I am not sure")
+        myDlg = gui.Dlg(title="Answer", screen=2)
         myDlg.addField('Answer:', choices=questions3.questions_list3[image_id][1])
         answer = myDlg.show()  # save input in ok_data
         answers[image_id] = answer
 
+        counter += 1
+        if counter == 3:
+            break
 
     # create file to store answers
     with open('Answers for design 3 by participant ' + str(participant_id) + '.txt', 'w') as file:
@@ -327,7 +330,7 @@ def design3():
 
 # Design order: Image Task
 def design4():
-    pause("For this design you will see the image and then the question after")
+    pause()
 
     tracker.send_message('design 4 start')
 
@@ -338,9 +341,10 @@ def design4():
 
     images = []  # create list of stimuli images
     for element in im_list:
-        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size))
+        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=(2, 2)))
 
     np.random.shuffle(images)  # shuffle images so they appear in a random order
+    counter = 0
     # create dictionary for answers
     answers = {}
     for image in images:
@@ -368,15 +372,15 @@ def design4():
         tracker.send_message(''.join(['offset_', im_name]))
         stim.draw()
         win.flip()
-        tracker.send_message(''.join(['onset_', im_name, '_question1']))
         # create dialog window
-        myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
-        questions4.questions_list4[image_id][1].append("I am not sure")
+        myDlg = gui.Dlg(title="Answer", screen=2)
         myDlg.addField('Answer:', choices=questions4.questions_list4[image_id][1])
         answer = myDlg.show()  # save input in ok_data
         answers[image_id] = answer
-        tracker.send_message(''.join(['offset_', im_name, '_question1']))
 
+        counter += 1
+        if counter == 3:
+            break
 
     # create file to store answers
     with open('Answers for design 4 by participant ' + str(participant_id) + '.txt', 'w') as file:
@@ -395,7 +399,7 @@ def design4():
 
 # Sound design
 def design5():
-    pause("For this design you will hear the question at any time before opening the dialogue to answer")
+    pause()
 
     tracker.send_message('design 5 start')
 
@@ -406,10 +410,11 @@ def design5():
 
     images = []  # create list of stimuli images
     for element in im_list:
-        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size))
+        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=(2, 2)))
 
     s = r'sound files for design 5'
     np.random.shuffle(images)  # shuffle images so they appear in a random order
+    counter = 0
     # create dictionary for answers
     answers = {}
     kb = keyboard.Keyboard()
@@ -423,8 +428,7 @@ def design5():
         x = x.split('.')
         image_id = x[0]
         print(image_id)
-        stim = visual.TextStim(win, r'Press "s" to hear questions again' +
-                               '\n \n Click the left mouse button to continue',
+        stim = visual.TextStim(win, r'Press "s" to hear questions again',
                                color=(1, 1, 1), colorSpace='rgb')
         # show question
         stim.draw()
@@ -468,11 +472,14 @@ def design5():
                 break
         kb.clearEvents()
         # create dialog window
-        myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
-        questions5.questions_list5[image_id][1].append("I am not sure")
+        myDlg = gui.Dlg(title="Answer", screen=2)
         myDlg.addField('Answer:', choices=questions5.questions_list5[image_id][1])
         answer = myDlg.show()  # save input in answer
         answers[image_id] = answer  # save answer in answers dictionary with image_id as key
+
+        counter += 1
+        if counter == 3:
+            break
 
     # create file to store answers
     with open('Answers for design 5 by participant' + str(participant_id) + '.txt', 'w') as file:
@@ -491,24 +498,12 @@ def design5():
 
 # create Pre-test Survey
 myDlg = gui.Dlg(title="Pre-test Survey", screen=SCREEN_ID)
-myDlg.cancelbutton.clicked.connect(myDlg.accept)
-myDlg.addField('What is your gender?:', choices=["Male", "Female", "Other", "Prefer not to say"])
-myDlg.addField('Age:', choices=[18, 19, 20, 21, 22,23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-                                40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, "Prefer not to say"])
+myDlg.addField('What is your gender?:', choices=["Male", "Female", "Other"])
+myDlg.addField('Age:')
 myDlg.addField('How many years did you have English as a subject in school?:',
-               choices=["5 or fewer", "6 to 10", "11 or more", "Prefer not to say"])
-myDlg.addField('How confident are you in your English skills?:',
-               choices=["Very confident", "A little confident", "Not at all confident", "Prefer not to say"])
-myDlg.addField('What is your dominant reading directionality?:',
-               choices=["Left to right", "Right to left", "Top to bottom", "Bidirectional", "Prefer not to say"])
+               choices=["5 or fewer", "6 to 10", "11 or more"])
 myDlg.addField('What is the highest degree or level of education you have completed?:',
-               choices=["High School", "Bachelor's Degree", "Master's Degree", "Doctors Degree", "Prefer not to say"])
-myDlg.addField('Do you have corrected eyesight (glasses, contact lenses, etc.)?:',
-               choices=["Yes", "No", "Prefer not to say"])
-myDlg.addField('Are you colorblind?:',
-               choices=["Yes, Red-green color blindness", "Yes, Blue-yellow color blindness", "Yes, Complete color "
-                        "blindness", "No", "Prefer not to say"])
-
+               choices=["Middle School", "High School", "Bachelor's Degree or higher", "Prefer not to say"])
 survey = myDlg.show()  # show dialog and wait for OK or Cancel
 if myDlg.OK:  # or if ok_data is not None
     print(survey)
@@ -522,7 +517,7 @@ with open('Pre-test Survey by participant ' + str(participant_id) + '.txt', 'w')
 
 # Window set-up (this color will be used for calibration)
 win = visual.Window(monitor=mon, fullscr=FULLSCREEN,
-                    screen=SCREEN_ID, size=SCREEN_RES, units='deg')
+                    screen=2, size=SCREEN_RES, units='deg')
 
 # Define mouse and make it so Mouse is visible
 myMouse = event.Mouse(visible=True)
@@ -535,7 +530,7 @@ print(im_list)
 
 images = []  # create list of stimuli images
 for element in im_list:
-    images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size))
+    images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=(1.5, 2)))
 
 np.random.shuffle(images)  # shuffle images so they appear in a random order
 counter = 0
@@ -543,11 +538,9 @@ counter = 0
 answers = {}
 
 stim = visual.TextStim(win,
-                       "The order of question and image will change between different designs "
-                       "\n"
+                       "The order of question and image will change between the different designs "
                        "\n Images will always be shown for 3 seconds "
-                       "\n"
-                       "\n Questions and instructions will be shown until you press the left mouse button",
+                       "\n questions will be shown until you press the left mouse button",
                        color=(1, 1, 1), colorSpace='rgb')
 # show question
 stim.draw()
@@ -585,8 +578,7 @@ for image in images:
     stim.draw()
     win.flip()
     # create dialog window
-    myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
-    questionsTraining.questions_Training[image_id][1].append("I am not sure")
+    myDlg = gui.Dlg(title="Answer", screen=2)
     myDlg.addField('Answer:', choices=questionsTraining.questions_Training[image_id][1])
     answer = myDlg.show()  # save input in ok_data
     answers[image_id] = answer
@@ -630,10 +622,11 @@ for i in range(monitor_refresh_rate):
     fixation_point.draw()
     t = win.flip()
     if i == 0:
+        tracker.send_message('fix on')
         tracker.send_message(''.join(['onset_', 'baseline']))
 
+tracker.send_message('fix off')
 tracker.send_message(''.join(['offset_', 'baseline']))
-
 
 # for counterbalancing implementing latin square
 if participant_id % 5 == 1:
