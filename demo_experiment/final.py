@@ -17,7 +17,7 @@ participant_id = 1
 
 # %%  Monitor/geometry
 MY_MONITOR = 'testMonitor'  # needs to exists in PsychoPy monitor center
-SCREEN_ID = 1
+SCREEN_ID = 3
 FULLSCREEN = False
 SCREEN_RES = [1920, 1080]
 SCREEN_WIDTH = 52.7  # cm
@@ -36,7 +36,7 @@ et_name = 'Tobii Pro Spectrum'
 # et_name = 'IS4_Large_Peripheral'
 # et_name = 'Tobii Pro Nano'
 
-dummy_mode = False
+dummy_mode = True
 bimonocular_calibration = False
 
 # Change any of the default dettings?e
@@ -71,7 +71,7 @@ def create_questionnaire():
                    choices=["Very Good", "Good", "Somewhat Good", "Neutral", "Somewhat Poor", "Poor", "Very Poor"])
     questionnaire_anwers = myDlg.show()  # show dialog and wait for OK or Cancel
     if myDlg.OK:  # or if ok_data is not None
-        print(questionnaire_anwers)
+        return questionnaire_anwers
     else:
         print('user cancelled')
 
@@ -161,9 +161,8 @@ def design1():
     win.flip()
 
     tracker.send_message('design 1 end')
-    questionnaire_anwers = None
 
-    create_questionnaire()
+    questionnaire_anwers = create_questionnaire()
 
     # create file to store answers
     with open('Questionnaire for design 1 by participant ' + str(participant_id) + '.txt', 'w') as file:
@@ -235,9 +234,7 @@ def design2():
 
     tracker.send_message('design 2 end')
 
-    questionnaire_anwers = None
-
-    create_questionnaire()
+    questionnaire_anwers = create_questionnaire()
 
     # create file to store answers
     with open('Questionnaire for design 2 by participant ' + str(participant_id) + '.txt', 'w') as file:
@@ -271,8 +268,10 @@ def design3():
         x = x.split('.')
         image_id = x[0]
         print(image_id)
-        stim = visual.TextStim(win, questions3.questions_list3[image_id][0],
+        stim = visual.TextStim(win, 'Click the left mouse button to see the image',
                                color=(1, 1, 1), colorSpace='rgb')
+        stim.draw()
+        win.flip()
         buttons = myMouse.getPressed()
         # check for left mouse button and move an when it gets pressed
         while buttons == [0, 0, 0]:
@@ -287,6 +286,8 @@ def design3():
                 tracker.send_message(''.join(['onset_', im_name, '1']))
                 # need to add a number at the end because the same picture gets shown twice at each trial
         tracker.send_message(''.join(['offset_', im_name, '1']))
+        stim = visual.TextStim(win, questions3.questions_list3[image_id][0],
+                               color=(1, 1, 1), colorSpace='rgb')
         # show question
         stim.draw()
         t = win.flip()
@@ -323,9 +324,7 @@ def design3():
 
     tracker.send_message('design 3 end')
 
-    questionnaire_anwers = None
-
-    create_questionnaire()
+    questionnaire_anwers = create_questionnaire()
 
     # create file to store answers
     with open('Questionnaire for design 3 by participant ' + str(participant_id) + '.txt', 'w') as file:
@@ -359,8 +358,10 @@ def design4():
         x = x.split('.')
         image_id = x[0]
         print(image_id)
-        stim = visual.TextStim(win, questions4.questions_list4[image_id][0],
+        stim = visual.TextStim(win, 'Click the left mouse button to see the image',
                                color=(1, 1, 1), colorSpace='rgb')
+        stim.draw()
+        win.flip()
         buttons = myMouse.getPressed()
         # check for left mouse button and move an when it gets pressed
         while buttons == [0, 0, 0]:
@@ -373,6 +374,8 @@ def design4():
             if i == 0:
                 tracker.send_message(''.join(['onset_', im_name]))
         tracker.send_message(''.join(['offset_', im_name]))
+        stim = visual.TextStim(win, questions4.questions_list4[image_id][0],
+                               color=(1, 1, 1), colorSpace='rgb')
         stim.draw()
         win.flip()
         tracker.send_message(''.join(['onset_', im_name, '_question1']))
@@ -394,9 +397,7 @@ def design4():
 
     tracker.send_message('design 4 end')
 
-    questionnaire_anwers = None
-
-    create_questionnaire()
+    questionnaire_anwers = create_questionnaire()
 
     # create file to store answers
     with open('Questionnaire for design 4 by participant ' + str(participant_id) + '.txt', 'w') as file:
@@ -462,6 +463,7 @@ def design5():
             keys = kb.getKeys(['s'], waitRelease=False)
             if 's' in keys:
                 mySound.play()
+                core.wait(secs=2, hogCPUperiod=0.2)
             if i == 0:
                 tracker.send_message(''.join(['onset_', im_name]))
         kb.clearEvents()
@@ -474,6 +476,7 @@ def design5():
             keys = kb.getKeys(['s', 'd'], waitRelease=False)
             if 's' in keys:
                 mySound.play()
+                core.wait(secs=2, hogCPUperiod=0.2)
             if 'd' in keys:
                 break
         kb.clearEvents()
@@ -493,9 +496,7 @@ def design5():
 
     tracker.send_message('design 5 end')
 
-    questionnaire_anwers = None
-
-    create_questionnaire()
+    questionnaire_anwers = create_questionnaire()
 
     # create file to store answers
     with open('Questionnaire for design 5 by participant ' + str(participant_id) + '.txt', 'w') as file:
@@ -525,8 +526,7 @@ myDlg.addField('Are you colorblind?:',
 survey = myDlg.show()  # show dialog and wait for OK or Cancel
 if myDlg.OK:  # or if ok_data is not None
     print(survey)
-else:
-    print('user cancelled')
+
 
 
 # create file to store answers
@@ -535,7 +535,7 @@ with open('Pre-test Survey by participant ' + str(participant_id) + '.txt', 'w')
 
 # Window set-up (this color will be used for calibration)
 win = visual.Window(monitor=mon, fullscr=FULLSCREEN,
-                    screen=2, size=SCREEN_RES, units='deg')
+                    screen=3, size=SCREEN_RES, units='deg')
 
 # Define mouse and make it so Mouse is visible
 myMouse = event.Mouse(visible=True)
@@ -560,18 +560,23 @@ stim = visual.TextStim(win,
                        "\n"
                        "\n Images will always be shown for 3 seconds "
                        "\n"
-                       "\n Questions and instructions will be shown until you press the left mouse button",
+                       "\n Questions and instructions will be shown until you press the left mouse button"
+                       "\n"
+                       "\n There will now be 3 example questions which will not be tracked",
                        color=(1, 1, 1), colorSpace='rgb')
 # show question
 stim.draw()
 t = win.flip()
 buttons = myMouse.getPressed()
-# check for left mouse button and move an when it gets pressed
+# check for left mouse button and move on when it gets pressed
 while buttons == [0, 0, 0]:
     buttons = myMouse.getPressed()
     if buttons == [1, 0, 0]:
         break
 
+# clear events and wait so mouse clicks get reset
+event.clearEvents()
+core.wait(0.1, 0.1)
 for image in images:
     win.flip()
     im_name = image.image
@@ -650,11 +655,11 @@ tracker.send_message(''.join(['offset_', 'baseline']))
 
 # for counterbalancing implementing latin square
 if participant_id % 5 == 1:
-    design1()
-    design2()
-    design3()
+    #design1()
+    #design2()
+    #design3()
     design5()
-    design4()
+    #design4()
 elif participant_id % 5 == 2:
     design2()
     design3()
