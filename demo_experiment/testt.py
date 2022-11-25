@@ -45,6 +45,40 @@ settings.FILENAME = 'testfile by participant' + str(participant_id) + '.tsv'
 settings.N_CAL_TARGETS = 5
 
 
+# create demographic survey
+def create_pre_test_survey():
+    # create Pre-test Survey
+    myDlg = gui.Dlg(title="Pre-test Survey", screen=SCREEN_ID)
+    myDlg.cancelbutton.clicked.connect(myDlg.accept)
+    myDlg.addField('What is your gender?:', choices=["Male", "Female", "Other", "Prefer not to say"])
+    myDlg.addField('Age:',
+                   choices=[18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+                            40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, "Prefer not to say"])
+    myDlg.addField('How many years did you have English as a subject in school?:',
+                   choices=["5 or fewer", "6 to 10", "11 or more", "Prefer not to say"])
+    myDlg.addField('How confident are you in your English skills?:',
+                   choices=["Very confident", "A little confident", "Not at all confident", "Prefer not to say"])
+    myDlg.addField('What is your dominant reading directionality?:',
+                   choices=["Left to right", "Right to left", "Top to bottom", "Bidirectional", "Prefer not to say"])
+    myDlg.addField('What is the highest degree or level of education you have completed?:',
+                   choices=["High School", "Bachelor's Degree", "Master's Degree", "Doctors Degree",
+                            "Prefer not to say"])
+    myDlg.addField('Do you have corrected eyesight (glasses, contact lenses, etc.)?:',
+                   choices=["Yes", "No", "Prefer not to say"])
+    myDlg.addField('Are you colorblind?:',
+                   choices=["Yes, Red-green color blindness", "Yes, Blue-yellow color blindness", "Yes, Complete color "
+                                                                                                  "blindness", "No",
+                            "Prefer not to say"])
+
+    survey = myDlg.show()  # show dialog and wait for OK or Cancel
+    if myDlg.OK:  # or if ok_data is not None
+        print(survey)
+
+    # create file to store answers
+    with open('Pre-test Survey by participant ' + str(participant_id) + '.txt', 'w') as file:
+        file.write(json.dumps(survey))
+
+
 # create NASA-TLX Questionnaire
 def create_questionnaire():
     myDlg = gui.Dlg(title="Questionnaire", screen=SCREEN_ID)
@@ -78,6 +112,8 @@ def create_questionnaire():
 
 # let participant pause the experiment before each design (between each 20-questions-block)
 def pause(text):
+    win = visual.Window(monitor=mon, fullscr=FULLSCREEN, allowGUI=True,
+                        screen=3, size=SCREEN_RES, units='deg')
     stim = visual.TextStim(win, text + "\n \n Click the left mouse button to start the experiment",
                            color=(1, 1, 1), colorSpace='rgb')
     # show instruction
@@ -94,6 +130,7 @@ def pause(text):
     stim.draw()
     t = win.flip()
     core.wait(1, 0.5)
+    win.close()
 
 
 # design_id == 1: Question image question
@@ -122,11 +159,8 @@ def design(design_id):
     s = r'sound files for design 5'
     im_list = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     print(im_list)
-    images = []  # create list of stimuli images
-    for element in im_list:
-        images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size))
 
-    np.random.shuffle(images)  # shuffle images so they appear in a random order
+    np.random.shuffle(im_list)  # shuffle images so they appear in a random order
     # create dictionary for answers
     answers = {}
     myMouse.setVisible(1)
@@ -135,19 +169,22 @@ def design(design_id):
     # for testing so you dont have to go through all 20 images
     counter = 0
 
-    for image in images:
-        kb.clearEvents()
-        win.flip()
-        im_name = image.image
+    for element in im_list:
+        # Window set-up (this color will be used for calibration)
+        win = visual.Window(monitor=mon, fullscr=FULLSCREEN, allowGUI=True,
+                            screen=3, size=SCREEN_RES, units='deg')
         # get image id
-        x = os.path.normpath(im_name)
+        x = os.path.normpath(element)
         x = os.path.basename(x)
         x = x.split('.')
         image_id = x[0]
         print(image_id)
+        image = visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size)
         # for design 1,2 show questions
         if design_id == 1 or design_id == 2:
-            stim = visual.TextStim(win, questions.questions[image_id][0],
+            stim = visual.TextStim(win, questions.questions[image_id][0] +
+                                   '\n'
+                                   '\n Click the left mouse button to see the image',
                                    color=(1, 1, 1), colorSpace='rgb')
         # for designs 3,4 show instructions
         elif design_id == 3 or design_id == 4:
@@ -165,7 +202,7 @@ def design(design_id):
         # show question
         stim.draw()
         t = win.flip()
-        tracker.send_message(''.join(['onset_', im_name, '_question1']))
+        tracker.send_message(''.join(['onset_', element, '_question1']))
         buttons = myMouse.getPressed()
         # check for left mouse button and move on when it gets pressed
         while buttons != [1, 0, 0]:
@@ -176,10 +213,12 @@ def design(design_id):
                 keys = kb.getKeys(['s'], waitRelease=False)
                 core.wait(secs=0.01, hogCPUperiod=0.01)
                 if 's' in keys:
+                    mySound.stop()
                     mySound.play()
             if buttons == [1, 0, 0]:
                 break
-        tracker.send_message(''.join(['offset_', im_name, '_question1']))
+        tracker.send_message(''.join(['offset_', element, '_question1']))
+
         # show image for 3 seconds
         for i in range(stimulus_duration * monitor_refresh_rate):
             image.draw()
@@ -187,36 +226,57 @@ def design(design_id):
             if design_id == 5:
                 keys = kb.getKeys(['s'], waitRelease=False)
                 if 's' in keys:
+                    mySound.stop()
                     mySound.play()
             if i == 0:
-                tracker.send_message(''.join(['onset_', im_name]))
-        tracker.send_message(''.join(['offset_', im_name]))
-        # for design_id 1,3,4 show question after image
-        if design_id == 1:
-            tracker.send_message(''.join(['onset_', im_name, '_question2']))
+                tracker.send_message(''.join(['onset_', element]))
+        tracker.send_message(''.join(['offset_', element]))
+
+        # for design_id 2 show only instruction
+        if design_id == 2:
+            stim = visual.TextStim(win, 'Click the left mouse button to answer question',
+                                   color=(1, 1, 1), colorSpace='rgb')
+            tracker.send_message(''.join(['onset_', element, '_question2']))
             stim.draw()
             win.flip()
-        if design_id == 3 or design_id == 4:
-            stim = visual.TextStim(win, questions.questions[image_id][0],
+        # for design 1,4 show question and instruction
+        if design_id == 4 or design_id == 1:
+            stim = visual.TextStim(win, questions.questions[image_id][0] +
+                                   '\n'
+                                   '\n Click the left mouse button to answer question',
                                    color=(1, 1, 1), colorSpace='rgb')
-            tracker.send_message(''.join(['onset_', im_name, '_question2']))
+            tracker.send_message(''.join(['onset_', element, '_question1']))
             stim.draw()
             win.flip()
         # for design 3 wait for mouse press then show image again
         if design_id == 3:
+            stim = visual.TextStim(win, questions.questions[image_id][0] +
+                                   '\n'
+                                   '\n Click the left mouse button to see the image',
+                                   color=(1, 1, 1), colorSpace='rgb')
+            tracker.send_message(''.join(['onset_', element, '_question1']))
+            stim.draw()
+            win.flip()
             # check for left mouse button and move an when it gets pressed
+            buttons = myMouse.getPressed()
             while buttons != [1, 0, 0]:
                 buttons = myMouse.getPressed()
                 if buttons == [1, 0, 0]:
                     break
-            tracker.send_message(''.join(['offset_', im_name, '_question1']))
+            tracker.send_message(''.join(['offset_', element, '_question1']))
             # show image
             for i in range(stimulus_duration * monitor_refresh_rate):
                 image.draw()
                 t = win.flip()
                 if i == 0:
-                    tracker.send_message(''.join(['onset_', im_name, '2']))
-            tracker.send_message(''.join(['offset_', im_name, '2']))
+                    tracker.send_message(''.join(['onset_', element, '2']))
+            tracker.send_message(''.join(['offset_', element, '2']))
+            win.flip()
+            # show instructions after image
+            stim = visual.TextStim(win, 'Click the left mouse button to answer question',
+                                   color=(1, 1, 1), colorSpace='rgb')
+            tracker.send_message(''.join(['onset_', element, '_question2']))
+            stim.draw()
             win.flip()
         # for design_id 5 different instructions
         if design_id == 5:
@@ -227,20 +287,30 @@ def design(design_id):
             while True:
                 keys = kb.getKeys(['s', 'd'], waitRelease=False)
                 if 's' in keys:
+                    mySound.stop()
                     mySound.play()
-                    core.wait(secs=2, hogCPUperiod=0.2)
                 if 'd' in keys:
                     break
-        myMouse.setVisible(1)
+        # for design 1,2,3,4 wait for mouse button press
+        if design_id == 1 or design_id == 2 or design_id == 3 or design_id == 4:
+            # check for left mouse button and move on when it gets pressed
+            buttons = myMouse.getPressed()
+            while buttons != [1, 0, 0]:
+                buttons = myMouse.getPressed()
+                if buttons == [1, 0, 0]:
+                    break
+        if design_id == 1 or design_id == 3 or design_id == 4:
+            tracker.send_message(''.join(['offset_', element, '_question2']))
+        win.close()
         # create dialog window
         myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
         questions.questions[image_id][1].append("I am not sure")
         myDlg.addField('Answer:', choices=questions.questions[image_id][1])
         answer = myDlg.show()  # save input in ok_data
         answers[image_id] = answer
-        if design_id == 1 or design_id == 3 or design_id == 4:
-            tracker.send_message(''.join(['offset_', im_name, '_question2']))
 
+
+        # for testing
         counter = counter + 1
         if counter == 3:
             break
@@ -248,8 +318,6 @@ def design(design_id):
     # create file to store answers
     with open('Answers for design ' + str(design_id) + ' by participant' + str(participant_id) + '.txt', 'w') as file:
         file.write(json.dumps(answers))
-
-    win.flip()
 
     tracker.send_message(''.join(['design ', str(design_id), ' end']))
 
@@ -261,122 +329,105 @@ def design(design_id):
         file.write(json.dumps(questionnaire_anwers))
 
 
-# create Pre-test Survey
-myDlg = gui.Dlg(title="Pre-test Survey", screen=SCREEN_ID)
-myDlg.cancelbutton.clicked.connect(myDlg.accept)
-myDlg.addField('What is your gender?:', choices=["Male", "Female", "Other", "Prefer not to say"])
-myDlg.addField('Age:', choices=[18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-                                40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, "Prefer not to say"])
-myDlg.addField('How many years did you have English as a subject in school?:',
-               choices=["5 or fewer", "6 to 10", "11 or more", "Prefer not to say"])
-myDlg.addField('How confident are you in your English skills?:',
-               choices=["Very confident", "A little confident", "Not at all confident", "Prefer not to say"])
-myDlg.addField('What is your dominant reading directionality?:',
-               choices=["Left to right", "Right to left", "Top to bottom", "Bidirectional", "Prefer not to say"])
-myDlg.addField('What is the highest degree or level of education you have completed?:',
-               choices=["High School", "Bachelor's Degree", "Master's Degree", "Doctors Degree", "Prefer not to say"])
-myDlg.addField('Do you have corrected eyesight (glasses, contact lenses, etc.)?:',
-               choices=["Yes", "No", "Prefer not to say"])
-myDlg.addField('Are you colorblind?:',
-               choices=["Yes, Red-green color blindness", "Yes, Blue-yellow color blindness", "Yes, Complete color "
-                                                                                              "blindness", "No",
-                        "Prefer not to say"])
-
-survey = myDlg.show()  # show dialog and wait for OK or Cancel
-if myDlg.OK:  # or if ok_data is not None
-    print(survey)
-
-# create file to store answers
-with open('Pre-test Survey by participant ' + str(participant_id) + '.txt', 'w') as file:
-    file.write(json.dumps(survey))
-
-# Window set-up (this color will be used for calibration)
-win = visual.Window(monitor=mon, fullscr=FULLSCREEN, allowGUI=True,
-                    screen=3, size=SCREEN_RES, units='deg')
-
-# Define mouse and make it so Mouse is visible
-myMouse = event.Mouse(visible=True)
-
 # Training for participants, data will not be recorded
-# make list of images
-mypath = r'images for training'
-im_list = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-print(im_list)
+def training():
+    # Window set-up (this color will be used for calibration)
+    win = visual.Window(monitor=mon, fullscr=FULLSCREEN, allowGUI=True,
+                        screen=3, size=SCREEN_RES, units='deg')
 
-images = []  # create list of stimuli images
-for element in im_list:
-    images.append(visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size))
+    # Define mouse
+    myMouse = event.Mouse()
 
-np.random.shuffle(images)  # shuffle images so they appear in a random order
-counter = 0
-# create dictionary for answers
-answers = {}
+    # make list of images
+    mypath = r'images for training'
+    im_list = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    print(im_list)
 
-stim = visual.TextStim(win,
-                       "The order of question and image will change between different designs "
-                       "\n"
-                       "\n Images will always be shown for 3 seconds "
-                       "\n"
-                       "\n Questions and instructions will be shown until you press the left mouse button"
-                       "\n"
-                       "\n There will now be 3 example questions which will not be tracked",
-                       color=(1, 1, 1), colorSpace='rgb')
-# show question
-stim.draw()
-t = win.flip()
-buttons = myMouse.getPressed()
-# check for left mouse button and move on when it gets pressed
-while buttons != [1, 0, 0]:
-    buttons = myMouse.getPressed()
-    if buttons == [1, 0, 0]:
-        break
+    np.random.shuffle(im_list)  # shuffle images so they appear in a random order
+    counter = 0
+    # create dictionary for answers
+    answers = {}
 
-# clear events and wait so mouse clicks get reset
-event.clearEvents()
-core.wait(0.1, 0.1)
-for image in images:
-    win.flip()
-    im_name = image.image
-    # get image id
-    x = os.path.normpath(im_name)
-    x = os.path.basename(x)
-    x = x.split('.')
-    image_id = x[0]
-    print(image_id)
-    stim = visual.TextStim(win, questions.questions[image_id][0] +
+    stim = visual.TextStim(win,
+                           "The order of question and image will change between different designs "
                            "\n"
-                           "\n Click the left mouse button to see the image",
+                           "\n Images will always be shown for 3 seconds "
+                           "\n"
+                           "\n Questions and instructions will be shown until you press the left mouse button"
+                           "\n"
+                           "\n There will now be 3 example questions which will not be tracked",
                            color=(1, 1, 1), colorSpace='rgb')
     # show question
     stim.draw()
     t = win.flip()
-    # check for left mouse button and move an when it gets pressed
     buttons = myMouse.getPressed()
+    # check for left mouse button and move on when it gets pressed
     while buttons != [1, 0, 0]:
         buttons = myMouse.getPressed()
         if buttons == [1, 0, 0]:
             break
-    for i in range(stimulus_duration * monitor_refresh_rate):
-        image.draw()
+    win.close()
+
+    # clear events and wait so mouse clicks get reset
+    event.clearEvents()
+    core.wait(0.1, 0.1)
+    for element in im_list:
+        # Window set-up (this color will be used for calibration)
+        win = visual.Window(monitor=mon, fullscr=FULLSCREEN, allowGUI=True,
+                            screen=3, size=SCREEN_RES, units='deg')
+        # get image id
+        x = os.path.normpath(element)
+        x = os.path.basename(x)
+        x = x.split('.')
+        image_id = x[0]
+        print(image_id)
+        image = visual.ImageStim(win, image=mypath + '/' + element, units='norm', size=image_size)
+        stim = visual.TextStim(win, questions.questions[image_id][0] +
+                               "\n"
+                               "\n Click the left mouse button to see the image",
+                               color=(1, 1, 1), colorSpace='rgb')
+        # show question
+        stim.draw()
         t = win.flip()
-    stim = visual.TextStim(win, questions.questions[image_id][0] +
-                           "\n" 
-                           "\n Click the left mouse button to answer the question",
-                           color=(1, 1, 1), colorSpace='rgb')
-    stim.draw()
-    win.flip()
-    # check for left mouse button and move an when it gets pressed
-    buttons = myMouse.getPressed()
-    while buttons != [1, 0, 0]:
+        # check for left mouse button and move an when it gets pressed
         buttons = myMouse.getPressed()
-    # create dialog window
-    myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
-    questions.questions[image_id][1].append("I am not sure")
-    myDlg.addField('Answer:', choices=questions.questions[image_id][1])
-    answer = myDlg.show()  # save input in ok_data
-    answers[image_id] = answer
+        while buttons != [1, 0, 0]:
+            buttons = myMouse.getPressed()
+            if buttons == [1, 0, 0]:
+                break
+        for i in range(stimulus_duration * monitor_refresh_rate):
+            image.draw()
+            t = win.flip()
+        stim = visual.TextStim(win, questions.questions[image_id][0] +
+                               "\n"
+                               "\n Click the left mouse button to answer the question",
+                               color=(1, 1, 1), colorSpace='rgb')
+        stim.draw()
+        win.flip()
+        # check for left mouse button and move an when it gets pressed
+        buttons = myMouse.getPressed()
+        while buttons != [1, 0, 0]:
+            buttons = myMouse.getPressed()
+        # create dialog window
+        win.close()
+        myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)
+        questions.questions[image_id][1].append("I am not sure")
+        myDlg.addField('Answer:', choices=questions.questions[image_id][1])
+        answer = myDlg.show()  # save input in ok_data
+        answers[image_id] = answer
 
 
+create_pre_test_survey()
+
+
+training()
+
+
+# Window set-up (this color will be used for calibration)
+win = visual.Window(monitor=mon, fullscr=FULLSCREEN, allowGUI=True,
+                    screen=3, size=SCREEN_RES, units='deg')
+# Define mouse
+myMouse = event.Mouse()
 stim = visual.TextStim(win, "click the left mouse button to begin",
                        color=(1, 1, 1), colorSpace='rgb')
 stim.draw()
@@ -419,6 +470,8 @@ for i in range(monitor_refresh_rate):
         tracker.send_message(''.join(['onset_', 'baseline']))
 
 tracker.send_message(''.join(['offset_', 'baseline']))
+
+win.close()
 
 # for counterbalancing implementing latin square
 if participant_id % 5 == 1:
