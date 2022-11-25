@@ -17,11 +17,11 @@ participant_id = 1
 
 # %%  Monitor/geometry
 MY_MONITOR = 'testMonitor'  # needs to exists in PsychoPy monitor center
-SCREEN_ID = 3
+SCREEN_ID = 1
 FULLSCREEN = False
 SCREEN_RES = [1920, 1080]
 SCREEN_WIDTH = 52.7  # cm
-VIEWING_DIST = 68  # distance from eye to center of screen (cm)
+VIEWING_DIST = 63  # distance from eye to center of screen (cm)
 image_size = (1.5, 2)
 
 monitor_refresh_rate = 60  # frames per second (fps)
@@ -36,7 +36,7 @@ et_name = 'Tobii Pro Spectrum'
 # et_name = 'IS4_Large_Peripheral'
 # et_name = 'Tobii Pro Nano'
 
-dummy_mode = True
+dummy_mode = False
 bimonocular_calibration = False
 
 # Change any of the default dettings?e
@@ -166,7 +166,7 @@ def design(design_id):
     myMouse.setVisible(1)
     kb = keyboard.Keyboard()
 
-    # for testing so you dont have to go through all 20 images
+    # for testing so you don't have to go through all 20 images
     counter = 0
 
     for element in im_list:
@@ -245,7 +245,7 @@ def design(design_id):
                                    '\n'
                                    '\n Click the left mouse button to answer question',
                                    color=(1, 1, 1), colorSpace='rgb')
-            tracker.send_message(''.join(['onset_', element, '_question1']))
+            tracker.send_message(''.join(['onset_', element, '_question2']))
             stim.draw()
             win.flip()
         # for design 3 wait for mouse press then show image again
@@ -254,7 +254,7 @@ def design(design_id):
                                    '\n'
                                    '\n Click the left mouse button to see the image',
                                    color=(1, 1, 1), colorSpace='rgb')
-            tracker.send_message(''.join(['onset_', element, '_question1']))
+            tracker.send_message(''.join(['onset_', element, '_question2']))
             stim.draw()
             win.flip()
             # check for left mouse button and move an when it gets pressed
@@ -263,7 +263,7 @@ def design(design_id):
                 buttons = myMouse.getPressed()
                 if buttons == [1, 0, 0]:
                     break
-            tracker.send_message(''.join(['offset_', element, '_question1']))
+            tracker.send_message(''.join(['offset_', element, '_question2']))
             # show image
             for i in range(stimulus_duration * monitor_refresh_rate):
                 image.draw()
@@ -275,7 +275,7 @@ def design(design_id):
             # show instructions after image
             stim = visual.TextStim(win, 'Click the left mouse button to answer question',
                                    color=(1, 1, 1), colorSpace='rgb')
-            tracker.send_message(''.join(['onset_', element, '_question2']))
+            tracker.send_message(''.join(['onset_', element, '_question3']))
             stim.draw()
             win.flip()
         # for design_id 5 different instructions
@@ -299,8 +299,10 @@ def design(design_id):
                 buttons = myMouse.getPressed()
                 if buttons == [1, 0, 0]:
                     break
-        if design_id == 1 or design_id == 3 or design_id == 4:
+        if design_id == 1 or design_id == 4 or design_id == 2:
             tracker.send_message(''.join(['offset_', element, '_question2']))
+        if design_id == 3:
+            tracker.send_message(''.join(['offset_', element, '_question3']))
         win.close()
         # create dialog window
         myDlg = gui.Dlg(title="Answer", screen=SCREEN_ID)

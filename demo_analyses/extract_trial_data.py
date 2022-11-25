@@ -131,12 +131,13 @@ for f in files:
 
         # had to rewrite the commented line below to work with the t list from my experiment file
         # get image id
-        x = os.path.normpath(t[0])
-        x = os.path.basename(x)
-        x = x.split('.')
-        image_id = x[0]
-        filename = x[0] + '.jpg' + '.tsv'
+        #x = os.path.normpath(t[0])
+        #x = os.path.basename(x)
+        #x = x.split('.')
+        #image_id = x[0]
+        #filename = x[0] + '.jpg' + '.tsv'
         #filename = t[0].split('_')[1] + '.tsv'
+        filename = t[0] + '.tsv'
         df_trial.to_csv(str(path) + os.sep + filename, sep='\t')
 
         print('Trial ' + filename + " written to folder ", path)
